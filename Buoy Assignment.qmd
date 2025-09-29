@@ -1,0 +1,88 @@
+---
+title: "Buoy Assignment"
+name: "Yuan Wang"
+format: html
+editor: visual
+---
+
+1.  Reading the buoy data.
+
+```{r}
+#Help from ChatGPT
+
+# library(dplyr)
+# library(readr)
+# 
+# # Years to download
+# years <- 1984:2024
+# 
+# # Standard column names for StdMet
+# col_names <- c("YY", "MM", "DD", "hh", "mm", "WDIR", "WSPD", "GST", "WVHT",
+#                "DPD", "APD", "MWD", "PRES", "ATMP", "WTMP", "DEWP", "VIS", "PTDY", "TIDE")
+# 
+# # Base URL
+# base_url <- "https://www.ndbc.noaa.gov/view_text_file.php?filename=44013h"
+# 
+# # Initialize list to store yearly data
+# all_data <- list()
+# 
+# for (year in years) {
+#   url <- paste0(base_url, year, ".txt.gz&dir=data/historical/stdmet/")
+#   local_file <- paste0("44013h", year, ".txt.gz")
+#   
+#   # Download file
+#   download.file(url, destfile = local_file, mode = "wb")
+#   
+#   # Read file: space-delimited, skip empty lines
+#   df <- read_table(local_file, col_names = FALSE, na = c("MM", "99", "99.0", "99.00", "999", "9999", "999.0"))
+#   
+#   # Fill missing columns with NA
+#   if (ncol(df) < length(col_names)) {
+#     for (i in (ncol(df)+1):length(col_names)) df[[i]] <- NA
+#   }
+#   
+#   # Assign standard column names
+#   colnames(df) <- col_names[1:ncol(df)]
+#   
+#   all_data[[as.character(year)]] <- df
+# }
+# 
+# # Combine all years
+# combined_data <- bind_rows(all_data)
+# 
+# # Save as CSV
+# write.csv(combined_data, "buoy_44013_stdmet_1984_2024.csv", row.names = FALSE)
+# 
+# cat("✅ CSV file created: buoy_44013_stdmet_1984_2024.csv\n")
+```
+
+Data column descriptions: https://www.ndbc.noaa.gov/faq/measdes.shtml
+
+```{r}
+df <- read.csv("buoy_44013_stdmet_1984_2024.csv", header = TRUE)
+buoy_df <- df[,1:19]
+head(buoy_df)
+
+colnames(buoy_df) <- c(
+  "YY","MM","DD","hh","WD","WSPD","GST","WVHT","DPD",
+  "APD","MWD","BAR","ATMP","WTMP","DEWP","VIS", "PTDY","TIDE")
+head(buoy_df)
+```
+
+2.  Address a question, make a plot, and explain your findings through it.
+
+Question: What was the median wind speed in 2001?
+
+```{r}
+buoy_df$WSPD <- as.numeric(buoy_df$WSPD)
+
+df_01 <- buoy_df[,c("YY", "WSPD")]
+df_02 <- df_01 %>% 
+  filter(YY == 2001)
+
+boxplot(df_02$WSPD, 
+        main = "Wind Speed in 2001",
+        ylab = "Wind Speed")
+```
+
+Explanation: The box-plot shows that the median wind speed in 2001 was 5 m/s. The first quartile is at 3 m/s, and the third quartile is at 7 m/s. This means that 50% of wind speed measurements fall between 3 m/s and 7 m/s. We can also observe that the upper half of the distribution contains more variability, and there are several outliers representing unusually high wind speeds.
