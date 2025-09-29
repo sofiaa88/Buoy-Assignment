@@ -1,6 +1,6 @@
 ---
 title: "Buoy Assignment"
-author: "Yuan Wang"
+name: "Yuan Wang"
 format: html
 editor: visual
 ---
